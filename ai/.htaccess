@@ -1,0 +1,38 @@
+# ----------------------------------------------------------------------
+# AI Klasörü İçin Güvenlik & Performans Ayarları
+# ----------------------------------------------------------------------
+
+# AI Klasörüne PHP veya HTML Kod Çalıştırılmasını Engelle
+<FilesMatch "\.(php|html|htm|shtml|pl|py|cgi|sh|exe|bat)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# AI Model Dosyalarına Direkt Erişimi Engelle (.safetensors, .bin, .pkl vb.)
+<FilesMatch "\.(safetensors|bin|pkl|h5|ckpt|py)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# AI Model ve Log Dosyalarının Görüntülenmesini Engelle
+Options -Indexes
+
+# Büyük Dosya Yüklemeleri İçin Zaman Aşımı Ayarları
+php_value max_execution_time 600
+php_value memory_limit 8G
+php_value upload_max_filesize 500M
+php_value post_max_size 512M
+
+# Yalnızca Laravel ve CLI Erişimine İzin Ver (Doğrudan Web Erişimini Engelle)
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_URI} !^/ai_service\.py$ [NC]
+    RewriteCond %{HTTP_USER_AGENT} !(curl|wget|python|PostmanRuntime|laravel|CLI) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# AI API Endpointlerine Yüksek Güvenlik
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>

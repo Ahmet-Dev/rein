@@ -1,0 +1,70 @@
+# ----------------------------------------------------------------------
+# Laravel 11 Güvenlik & Performans Optimizasyonu
+# ----------------------------------------------------------------------
+
+# Dizin Listelemeyi Kapat (Gizlilik İçin)
+Options -Indexes
+
+# .env ve Diğer Kritik Dosyalara Erişimi Engelle
+<FilesMatch "(\.env|\.git|\.htaccess|\.htpasswd|\.log|composer\.lock|package-lock\.json|artisan|config\.php|database\.php|routes\.php|.gitignore)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Cross-Origin Resource Sharing (CORS) Güvenliği
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, DELETE, PUT"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# Yükleme ve Bellek Limitleri (Dosya Boyutu Sınırlandırma)
+php_value upload_max_filesize 10M
+php_value post_max_size 12M
+php_value memory_limit 8G
+php_value max_execution_time 300
+
+# Rate Limiting (DDoS ve API Kötüye Kullanımını Engelleme)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # IP başına saniyede 5 istekten fazlasını engelle
+    RewriteCond %{REQUEST_URI} ^/api/ [NC]
+    RewriteCond %{REMOTE_ADDR} !^127\.0\.0\.1$
+    RewriteCond %{REQUEST_METHOD} ^(POST|PUT|DELETE)$ [NC]
+    RewriteRule .* - [R=429,L]
+</IfModule>
+
+# Laravel Ana Route Yönlendirme (Tüm İstekleri public/index.php'ye Yönlendir)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Https'ye yönlendirme (Eğer SSL kullanılıyorsa)
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Eğer dosya veya dizin yoksa, Laravel index.php'ye yönlendir
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Tarayıcı Önbellekleme (Cache Performansı Artırma)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access 1 hour"
+    ExpiresByType image/gif "access 1 month"
+    ExpiresByType image/jpeg "access 1 month"
+    ExpiresByType image/png "access 1 month"
+    ExpiresByType text/css "access 1 week"
+    ExpiresByType text/javascript "access 1 week"
+    ExpiresByType application/javascript "access 1 week"
+</IfModule>
+
+# XSS ve Güvenlik Başlıkları
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=()"
+</IfModule>
