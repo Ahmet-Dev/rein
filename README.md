@@ -65,4 +65,4 @@ It is used as an API and has simple, effective, CRM, HRM, ERP contents.
 
 ✅ AI database analysis and ai suggestions, efficient English.
 
-⭐ Don't forget to star the warehouse! 😊 🚀
+⭐ Don't forget to star the project! 😊 🚀
