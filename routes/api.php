@@ -55,6 +55,19 @@ RateLimiter::for('api', function (Request $request) {
     return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
 });
 
+// Ana giriş sayfası
+Route::get('/', function () {
+    return response()->json([
+        'message' => 'Giriş yapın',
+        'routes' => collect(Route::getRoutes())->map(function ($route) {
+            return [
+                'method' => $route->methods()[0] ?? '',
+                'uri' => $route->uri(),
+            ];
+        })->values(),
+    ]);
+});
+
 // Yetkilendirme Gerektirmeyen Endpointler
 // Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
