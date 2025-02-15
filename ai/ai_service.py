@@ -149,8 +149,8 @@ if __name__ == "__main__":
         for index, chunk in enumerate(table_data["chunks"]):
             formatted_db_data = json.dumps(chunk, indent=2, ensure_ascii=False)
 
-            if len(formatted_db_data) > 2000:
-                formatted_db_data = formatted_db_data[:2000] + "\n...(veri büyük olduğu için kesildi)"
+            if len(formatted_db_data) > 1000:
+                formatted_db_data = formatted_db_data[:1000] + "\n...(veri büyük olduğu için kesildi)"
 
             full_prompt = f"{system_prompt}Tablo: {table_name} (Bölüm {index + 1})\n{formatted_db_data}"
             response = generate_response(full_prompt)
