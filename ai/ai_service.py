@@ -17,7 +17,7 @@ model.eval()
 DB_CONFIG = {
     "dbname": "rein_db",
     "user": "admin",
-    "password": "12345678",
+    "password": "admin",
     "host": "localhost",
     "port": "5432"
 }
