@@ -93,8 +93,8 @@ def scrape_full_page(url):
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "li"])
         full_text = "\n".join([p.get_text() for p in paragraphs])
 
-        # Eğer metin çok uzunsa, 4000 karakterlik parçalara böl
-        max_chunk_size = 4000
+        # Eğer metin çok uzunsa, 2000 karakterlik parçalara böl
+        max_chunk_size = 2000
         chunks = [full_text[i:i+max_chunk_size] for i in range(0, len(full_text), max_chunk_size)]
 
         return chunks
@@ -149,8 +149,8 @@ if __name__ == "__main__":
         for index, chunk in enumerate(table_data["chunks"]):
             formatted_db_data = json.dumps(chunk, indent=2, ensure_ascii=False)
 
-            if len(formatted_db_data) > 4000:
-                formatted_db_data = formatted_db_data[:4000] + "\n...(veri büyük olduğu için kesildi)"
+            if len(formatted_db_data) > 2000:
+                formatted_db_data = formatted_db_data[:2000] + "\n...(veri büyük olduğu için kesildi)"
 
             full_prompt = f"{system_prompt}Tablo: {table_name} (Bölüm {index + 1})\n{formatted_db_data}"
             response = generate_response(full_prompt)
